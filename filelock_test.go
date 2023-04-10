@@ -2,6 +2,7 @@ package filelock_test
 
 import (
 	"os/exec"
+	"time"
 
 	"code.cloudfoundry.org/filelock"
 
@@ -9,7 +10,7 @@ import (
 	"os"
 	"path/filepath"
 
-	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/gbytes"
 	"github.com/onsi/gomega/gexec"
@@ -99,12 +100,13 @@ var _ = Describe("Locking using a file", func() {
 			Expect(err).ToNot(HaveOccurred())
 		})
 
-		It("blocks the second open until the first one is closed", func(done Done) {
+		It("blocks the second open until the first one is closed", func() {
 			locker := filelock.NewLocker(path)
 
 			By("attempting to acquire another lock on the same file")
 			lockAcquiredChan := make(chan struct{})
 			var secondFileHandle filelock.LockedFile
+			done := make(chan struct{})
 			go func() {
 				defer GinkgoRecover()
 
@@ -113,6 +115,7 @@ var _ = Describe("Locking using a file", func() {
 				Expect(err).NotTo(HaveOccurred())
 
 				lockAcquiredChan <- struct{}{}
+				close(done)
 			}()
 			By("verifying that we cannot acquire the lock")
 			Consistently(lockAcquiredChan).ShouldNot(Receive())
@@ -128,12 +131,12 @@ var _ = Describe("Locking using a file", func() {
 
 			Expect(secondFileHandle.Close()).To(Succeed())
 
-			close(done)
-		}, 5 /* max seconds allowed for this spec */)
+			Eventually(done, 5*time.Second).Should(BeClosed())
+		})
 	})
 
 	Context("when the file is locked from a separate OS process", func() {
-		It("blocks the second file open until after the other process has released the lock", func(done Done) {
+		It("blocks the second file open until after the other process has released the lock", func() {
 			cmd := exec.Command(pathToBinary, path)
 			stdinPipe, err := cmd.StdinPipe()
 			Expect(err).NotTo(HaveOccurred())
@@ -152,6 +155,7 @@ var _ = Describe("Locking using a file", func() {
 			locker := filelock.NewLocker(path)
 
 			lockAcquiredChan := make(chan struct{})
+			done := make(chan struct{})
 			var file filelock.LockedFile
 			go func() {
 				defer GinkgoRecover()
@@ -161,6 +165,7 @@ var _ = Describe("Locking using a file", func() {
 				Expect(err).NotTo(HaveOccurred())
 
 				lockAcquiredChan <- struct{}{}
+				close(done)
 			}()
 
 			By("verifying that we cannot acquire the lock")
@@ -177,7 +182,7 @@ var _ = Describe("Locking using a file", func() {
 
 			By("releasing the lock")
 			Expect(file.Close()).To(Succeed())
-			close(done)
-		}, 5 /* max seconds allowed for this spec */)
+			Eventually(done, 5*time.Second).Should(BeClosed())
+		})
 	})
 })
