@@ -1,12 +1,12 @@
 package filelock_test
 
 import (
+	"io"
 	"os/exec"
 	"time"
 
 	"code.cloudfoundry.org/filelock"
 
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -22,7 +22,7 @@ var _ = Describe("Locking using a file", func() {
 
 	BeforeEach(func() {
 		var err error
-		tempDir, err = ioutil.TempDir("", "")
+		tempDir, err = os.MkdirTemp("", "")
 		Expect(err).NotTo(HaveOccurred())
 
 		path = filepath.Join(tempDir, "dir1", "dir2", "some-file.json")
@@ -39,7 +39,7 @@ var _ = Describe("Locking using a file", func() {
 			file, err := lock.Open()
 			Expect(err).NotTo(HaveOccurred())
 
-			initialContents, err := ioutil.ReadAll(file)
+			initialContents, err := io.ReadAll(file)
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(initialContents).To(Equal(expectedInitialContents))
@@ -55,14 +55,14 @@ var _ = Describe("Locking using a file", func() {
 			_, err = file.Seek(0, 0)
 			Expect(err).NotTo(HaveOccurred())
 
-			allBytes, err := ioutil.ReadAll(file)
+			allBytes, err := io.ReadAll(file)
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(allBytes).To(Equal([]byte("hello")))
 
 			Expect(file.Close()).To(Succeed())
 
-			allBytes, err = ioutil.ReadFile(path)
+			allBytes, err = os.ReadFile(path)
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(allBytes).To(Equal([]byte("hello")))
@@ -81,7 +81,7 @@ var _ = Describe("Locking using a file", func() {
 
 		BeforeEach(func() {
 			Expect(os.MkdirAll(filepath.Dir(path), 0700)).To(Succeed())
-			Expect(ioutil.WriteFile(path, preExistingContents, 0600)).To(Succeed())
+			Expect(os.WriteFile(path, preExistingContents, 0600)).To(Succeed())
 		})
 		AssertBasicThingsWork(preExistingContents)
 	})
@@ -127,7 +127,7 @@ var _ = Describe("Locking using a file", func() {
 			Eventually(lockAcquiredChan).Should(Receive())
 
 			By("validating the data written to the first lock")
-			Expect(ioutil.ReadAll(secondFileHandle)).To(Equal([]byte("the first data")))
+			Expect(io.ReadAll(secondFileHandle)).To(Equal([]byte("the first data")))
 
 			Expect(secondFileHandle.Close()).To(Succeed())
 
@@ -178,7 +178,7 @@ var _ = Describe("Locking using a file", func() {
 			Eventually(lockAcquiredChan).Should(Receive())
 
 			By("validating the data written by the external process")
-			Expect(ioutil.ReadAll(file)).To(Equal([]byte("some data from the external process")))
+			Expect(io.ReadAll(file)).To(Equal([]byte("some data from the external process")))
 
 			By("releasing the lock")
 			Expect(file.Close()).To(Succeed())

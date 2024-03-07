@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"strings"
 	"time"
@@ -36,7 +35,7 @@ func mainWithError() error {
 	durationToAcquire := time.Since(startTime)
 	fmt.Fprintf(os.Stderr, "done after %f milliseconds.\n", durationToAcquire.Seconds())
 
-	contents, err := ioutil.ReadAll(file)
+	contents, err := io.ReadAll(file)
 	if err != nil {
 		return fmt.Errorf("read: %s", err)
 	}
