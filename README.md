@@ -1,24 +1,16 @@
-# Contributing
+# filelock
 
-See the [Contributing.md](./.github/CONTRIBUTING.md) for more
-information on how to contribute.
+[![Go Report
+Card](https://goreportcard.com/badge/code.cloudfoundry.org/filelock)](https://goreportcard.com/report/code.cloudfoundry.org/filelock)
+[![Go
+Reference](https://pkg.go.dev/badge/code.cloudfoundry.org/filelock.svg)](https://pkg.go.dev/code.cloudfoundry.org/filelock)
 
-# Working Group Charter
+This library will allow locking a file for synchronous operation.
 
-This repository is maintained by [App Runtime
-Platform](https://github.com/cloudfoundry/community/blob/main/toc/working-groups/app-runtime-platform.md)
-under `Networking` area.
-
-# Contributing
-
-See the [Contributing.md](./.github/CONTRIBUTING.md) for more
-information on how to contribute.
-
-# Working Group Charter
-
-This repository is maintained by [App Runtime
-Platform](https://github.com/cloudfoundry/community/blob/main/toc/working-groups/app-runtime-platform.md)
-under `Diego` area.
+> \[!NOTE\]
+>
+> This repository should be imported as
+> `code.cloudfoundry.org/filelock`.
 
 # Contributing
 
@@ -29,7 +21,7 @@ information on how to contribute.
 
 This repository is maintained by [App Runtime
 Platform](https://github.com/cloudfoundry/community/blob/main/toc/working-groups/app-runtime-platform.md)
-under `Diego` area.
+under `Garden Containers` area.
 
 > \[!IMPORTANT\]
 >
