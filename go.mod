@@ -3,8 +3,8 @@ module code.cloudfoundry.org/filelock
 go 1.20
 
 require (
-	github.com/onsi/ginkgo/v2 v2.19.0
-	github.com/onsi/gomega v1.33.1
+	github.com/onsi/ginkgo/v2 v2.19.1
+	github.com/onsi/gomega v1.34.0
 	golang.org/x/sys v0.22.0
 )
 
