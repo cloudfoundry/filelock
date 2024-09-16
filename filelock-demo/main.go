@@ -41,7 +41,10 @@ func mainWithError() error {
 	}
 	fmt.Fprintf(os.Stderr, "printing file contents to stdout:\n")
 
-	os.Stdout.Write(contents)
+	_, err = os.Stdout.Write(contents)
+	if err != nil {
+		return fmt.Errorf("write to stdout: %s", err)
+	}
 
 	fmt.Fprintf(os.Stderr, "\nEnter new file contents and then Enter + Ctrl+D (EOF) to release the lock\n")
 
